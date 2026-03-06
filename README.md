@@ -3,7 +3,7 @@
 
 ## Tests
 Media Detector
-- python -m unittest tests/test_media_detector.py -v
+- TO DO
 
 All
-- python -m unittest discover -s tests -v
+- pytest -v

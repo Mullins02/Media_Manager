@@ -8,4 +8,4 @@ class MediaDetector:
             for keyword in keywords:
                 if keyword in directory:
                     return media_type 
-        return "UNKNOWN"
+        return "UNKNOWN_"
