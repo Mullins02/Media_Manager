@@ -5,7 +5,7 @@ from .filename_cleaner_show import ShowFilenameCleaner
 from .filename_cleaner_movie import MovieFilenameCleaner
 
 CLEANERS = {
-    "UNKNOWN": BaseFilenameCleaner,
+    "UNKNOWN": None,
     "SHOW": ShowFilenameCleaner,
     "MOVIE": MovieFilenameCleaner,
 }

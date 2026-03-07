@@ -7,8 +7,9 @@ from constants import FILE_EXTENSIONS_TO_SKIP, VIDEO_EXTENSIONS
 class BaseFilenameCleaner():
     def __init__(self, directory, filename, config=None):
         self.directory = directory
-        self.filename_og, self.file_extension = os.path.splitext(filename)
-        self.filename_working = self.filename_og
+        self.filename_og = filename
+        self.filename_working = filename
+        _, self.file_extension = os.path.splitext(filename)
         self.changed = False
         self.config = config
         self.tmdb = TMDB_Utils()
@@ -38,7 +39,6 @@ class BaseFilenameCleaner():
         self.filename_working = self.filename_working.strip()
 
     def compare_og_to_work(self) -> bool:
-        print(self.filename_og, self.filename_working)
         return self.filename_og != self.filename_working
 
     def results(self) -> dict:
