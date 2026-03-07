@@ -1,5 +1,5 @@
 import pytest
-from src.tmdb_helper import TMDB_Utils
+from utils.tmdb_helper import TMDB_Utils
 
 
 class MockResponse:
@@ -26,7 +26,7 @@ def test_get_show_id_success(monkeypatch, tmdb):
     def mock_get(url, params=None):
         return MockResponse({"results": [{"id": 120089, "name": "SPY x FAMILY"}]})
 
-    monkeypatch.setattr("src.tmdb_helper.requests.get", mock_get)
+    monkeypatch.setattr("utils.tmdb_helper.requests.get", mock_get)
 
     result = tmdb._get_show_id("Spy X Family")
     assert result == 120089
@@ -36,7 +36,7 @@ def test_get_show_id_not_found(monkeypatch, tmdb):
     def mock_get(url, params=None):
         return MockResponse({"results": []})
 
-    monkeypatch.setattr("src.tmdb_helper.requests.get", mock_get)
+    monkeypatch.setattr("utils.tmdb_helper.requests.get", mock_get)
 
     result = tmdb._get_show_id("Not A Real Show")
     assert result is None
@@ -59,7 +59,7 @@ def test_get_series_details_with_show_name(monkeypatch, tmdb):
             )
         return MockResponse({})
 
-    monkeypatch.setattr("src.tmdb_helper.requests.get", mock_get)
+    monkeypatch.setattr("utils.tmdb_helper.requests.get", mock_get)
 
     result = tmdb.get_series_details(show_name="Spy X Family")
 
@@ -90,7 +90,7 @@ def test_get_series_details_with_show_id(monkeypatch, tmdb):
             )
         return MockResponse({})
 
-    monkeypatch.setattr("src.tmdb_helper.requests.get", mock_get)
+    monkeypatch.setattr("utils.tmdb_helper.requests.get", mock_get)
 
     result = tmdb.get_series_details(show_id=120089)
 
@@ -132,7 +132,7 @@ def test_get_episode_list_with_show_name(monkeypatch, tmdb):
             )
         return MockResponse({})
 
-    monkeypatch.setattr("src.tmdb_helper.requests.get", mock_get)
+    monkeypatch.setattr("utils.tmdb_helper.requests.get", mock_get)
 
     result = tmdb.get_episode_list(show_name="Spy X Family")
 
@@ -164,7 +164,7 @@ def test_get_episode_list_with_show_id(monkeypatch, tmdb):
             )
         return MockResponse({})
 
-    monkeypatch.setattr("src.tmdb_helper.requests.get", mock_get)
+    monkeypatch.setattr("utils.tmdb_helper.requests.get", mock_get)
 
     result = tmdb.get_episode_list(show_id=120089)
 
@@ -195,7 +195,7 @@ def test_get_episode_list_with_series_details(monkeypatch, tmdb):
             )
         return MockResponse({})
 
-    monkeypatch.setattr("src.tmdb_helper.requests.get", mock_get)
+    monkeypatch.setattr("utils.tmdb_helper.requests.get", mock_get)
 
     result = tmdb.get_episode_list(series_details=series_details, show_id=120089)
 
@@ -212,7 +212,7 @@ def test_get_movie_id_success(monkeypatch, tmdb):
     def mock_get(url, params=None):
         return MockResponse({"results": [{"id": 348, "title": "Alien"}]})
 
-    monkeypatch.setattr("src.tmdb_helper.requests.get", mock_get)
+    monkeypatch.setattr("utils.tmdb_helper.requests.get", mock_get)
 
     result = tmdb._get_movie_id("Alien")
     assert result == 348
@@ -222,7 +222,7 @@ def test_get_movie_id_not_found(monkeypatch, tmdb):
     def mock_get(url, params=None):
         return MockResponse({"results": []})
 
-    monkeypatch.setattr("src.tmdb_helper.requests.get", mock_get)
+    monkeypatch.setattr("utils.tmdb_helper.requests.get", mock_get)
 
     result = tmdb._get_movie_id("Definitely Not Real")
     assert result is None
@@ -238,7 +238,7 @@ def test_get_movie_details_with_name(monkeypatch, tmdb):
             )
         return MockResponse({})
 
-    monkeypatch.setattr("src.tmdb_helper.requests.get", mock_get)
+    monkeypatch.setattr("utils.tmdb_helper.requests.get", mock_get)
 
     result = tmdb.get_movie_details(movie_name="Alien")
 
@@ -258,7 +258,7 @@ def test_get_movie_details_with_id(monkeypatch, tmdb):
             )
         return MockResponse({})
 
-    monkeypatch.setattr("src.tmdb_helper.requests.get", mock_get)
+    monkeypatch.setattr("utils.tmdb_helper.requests.get", mock_get)
 
     result = tmdb.get_movie_details(movie_id=348)
 
@@ -279,7 +279,7 @@ def test_get_movie_details_not_found(monkeypatch, tmdb):
             return MockResponse({"results": []})
         return MockResponse({})
 
-    monkeypatch.setattr("src.tmdb_helper.requests.get", mock_get)
+    monkeypatch.setattr("utils.tmdb_helper.requests.get", mock_get)
 
     result = tmdb.get_movie_details(movie_name="Not A Real Movie")
     assert result is None

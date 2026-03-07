@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 import os
 import re
-from pathlib import Path
+from pathlib import PureWindowsPath
+import logging
 
 from constants import (
     EPISODE_PATTERN_TEMPLATE,
@@ -11,13 +12,14 @@ from constants import (
 
 from cleaners.filename_cleaner_base import BaseFilenameCleaner
 
+logger = logging.getLogger(__name__)
 #TODO - add Part 1, 2, etc instead of (1), (2), etc
 class ShowFilenameCleaner(BaseFilenameCleaner):
     show_name = None
 
     def __init__(self, directory: str, filename: str, config=None):
         super().__init__(directory, filename, config)
-        path = Path(directory)
+        path = PureWindowsPath(directory)
         folder_name = path.name
         if config and getattr(config, "show_name", None):
             self.show_name = config.show_name
@@ -116,7 +118,7 @@ class ShowFilenameCleaner(BaseFilenameCleaner):
                 except ValueError:
                     continue
         if not season_found_in_filename:
-            folder_name = os.path.basename(self.directory)
+            folder_name = folder_name = PureWindowsPath(self.directory).name
             season_match = re.search(r"[Ss]eason\s*(\d+)", folder_name, re.IGNORECASE)
             if season_match:
                 season_num = int(season_match.group(1))
@@ -130,13 +132,11 @@ class ShowFilenameCleaner(BaseFilenameCleaner):
             return f"{self.show_name} - S{season_num:02}E{episode_num:02}{self.file_extension}"
         return None
 
-    def clean_filename(self) -> str:
-        if not self.format_file():
-            print("Skipped file type")
-            return self.results()
+    def clean_filename(self) -> dict:
+        if not self.cleanable():
+            logger.debug("Skipped file type")
         elif self.build_episode_pattern(self.show_name).match(self.filename_og):
-            # print("Already formatted")
-            return self.results()
+            logger.debug("Already formatted")
         else:
             self.remove_common_fluff()
             self.remove_ver_ind()
