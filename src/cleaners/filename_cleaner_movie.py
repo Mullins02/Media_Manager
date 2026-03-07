@@ -26,7 +26,7 @@ class MovieFilenameCleaner(BaseFilenameCleaner):
             year = match.group(2)
         return {"title": title, "year": year}
 
-    def clean_filename(self) -> str:
+    def clean_filename(self) -> dict:
         if not self.cleanable():
             logger.debug("Skipped file type")
         elif self.build_movie_pattern().match(self.filename_og):

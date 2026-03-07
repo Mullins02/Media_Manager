@@ -9,12 +9,18 @@ logger = logging.getLogger(__name__)
 
 class UIBackend():
     def __init__(self, media_files:list[dict]=None):
-        if not media_files:
-            media_files = LibraryScanner().scan()
         self.media_files = media_files
-    
-    def grouped_media(self):
+        
+    def _from_scan(self) ->  list[dict]:
+        """Explicitly perform library scan."""
+        media_files = LibraryScanner().scan()
+        return media_files
+
+    def grouped_media(self) -> dict:
         grouped = {}
+        
+        if not self.media_files:
+            self.media_files = self._from_scan()
 
         for media_file in self.media_files:
             media_type  = media_file["media_type"]

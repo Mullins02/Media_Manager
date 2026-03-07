@@ -70,4 +70,6 @@ class MediaManagerUI:
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    MediaManagerUI.run()
+    root = tk.Tk()
+    app = MediaManagerUI(root)
+    app.run()

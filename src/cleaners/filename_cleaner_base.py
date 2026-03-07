@@ -47,7 +47,7 @@ class BaseFilenameCleaner():
     def results(self) -> dict:
         return {"filename": self.filename_working, "changed": self.compare_og_to_work(), "cleanable": self.cleanable()}
 
-    def clean_filename(self) -> str:
+    def clean_filename(self) -> dict:
         if not self.cleanable():
             logger.debug("File not formattable")
         elif self.cleanable():

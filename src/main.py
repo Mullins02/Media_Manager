@@ -20,27 +20,6 @@ logger = logging.getLogger(__name__)
 logger.info("Starting Media Manager")
 
 def main():
-    # test_files = [
-    #     ("Media/Shows/The Office/Season 2", "The.Office.S02E03.WEBRip.mkv"),
-    #     ("Media/Shows/Mr Inbetween", "Mr Inbetween - S01E01 - The Pee Pee Guy.mkv"),
-    #     ("Media/Movies", "The.Dark.Knight.2008.1080p.mkv"),
-    #     ("Media/Downloads", "random_file.mkv"),
-    # ]W
-
-    # for directory, filename in test_files:
-    #     cleaner = MediaDetector.get_cleaner(directory, filename)
-
-    #     print(f"Original: {filename}")
-
-    #     if cleaner is None:
-    #         print("Type: UNKNOWN")
-    #         continue
-
-    #     cleaned = cleaner.clean_filename()
-
-    #     # TODO - compare the cleaned filname to tmdb
-    #     print(f"Cleaned: {cleaned}\n")
-
     root = tk.Tk()
     app = MediaManagerUI(root)
     app.run()
