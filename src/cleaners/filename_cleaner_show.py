@@ -11,7 +11,7 @@ from constants import (
 
 from cleaners.filename_cleaner_base import BaseFilenameCleaner
 
-
+#TODO - add Part 1, 2, etc instead of (1), (2), etc
 class ShowFilenameCleaner(BaseFilenameCleaner):
     show_name = None
 
@@ -133,8 +133,10 @@ class ShowFilenameCleaner(BaseFilenameCleaner):
     def clean_filename(self) -> str:
         if not self.format_file():
             print("Skipped file type")
+            return self.results()
         elif self.build_episode_pattern(self.show_name).match(self.filename_og):
-            print("Already formatted")
+            # print("Already formatted")
+            return self.results()
         else:
             self.remove_common_fluff()
             self.remove_ver_ind()

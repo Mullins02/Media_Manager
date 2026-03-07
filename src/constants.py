@@ -46,4 +46,4 @@ MEDIA_FOLDERS = [
     r"Z:\Shows\Television",
 ]
 
-FILE_EXTENSIONS_TO_SKIP = [".ico", ".ini"]
+FILE_EXTENSIONS_TO_SKIP = [".ico", ".ini", ".torrent"]

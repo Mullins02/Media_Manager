@@ -12,8 +12,7 @@ class TMDB_Utils:
         self.base_url = "https://api.themoviedb.org/3"
 
     def _title_formatting(self, title):
-        title = title.title()
-        title = re.sub(r"'S(\s|$)", "'s\\1", title)
+        title = re.sub(r"'([A-Z])", lambda m: "'" + m.group(1).lower(), title)
         title = re.sub(r'["*]', "'", title)  # replace " and *
         title = re.sub(r"[<>]", " ", title)  # remove < >
         title = re.sub(r"[\\/|]", "+", title)  # / \ | -> +
@@ -132,8 +131,16 @@ class TMDB_Utils:
         params = {"api_key": self.api_key, "query": movie_name}
 
         if year:
-            params["year"] = year
+            params["primary_release_year"] = year
 
+        response = requests.get(url, params=params)
+        data = response.json()
+
+        if "results" in data and data["results"]:
+            return data["results"][0]["id"]
+        
+        params = {"api_key": self.api_key, "query": movie_name}
+        
         response = requests.get(url, params=params)
         data = response.json()
 
@@ -142,13 +149,13 @@ class TMDB_Utils:
 
         return None
 
-    def get_movie_details(self, movie_name=None, movie_id=None):
+    def get_movie_details(self, movie_name=None, year=None, movie_id=None):
         if not (movie_name or movie_id):
             print("Required movie_name or movie_id")
             return None
 
         if not movie_id and movie_name:
-            movie_id = self._get_movie_id(movie_name)
+            movie_id = self._get_movie_id(movie_name, year)
 
         if not movie_id:
             print("Could not find movie")
@@ -165,11 +172,13 @@ class TMDB_Utils:
             return None
 
         title = self._title_formatting(data.get("title"))
-        release_date = data.get("release_date")
+        
+        year = self.get_movie_year_from_releases(movie_id=movie_id)
 
-        year = None
-        if release_date:
-            year = release_date[:4]
+        if not year:
+            release_date = data.get("release_date")
+            if release_date:
+                year = release_date[:4]
 
         return {
             "movie_id": movie_id,
@@ -177,6 +186,30 @@ class TMDB_Utils:
             "year": year,
             "formatted_title": f"{title} ({year})",
         }
+        
+    def get_movie_year_from_releases(self, movie_name=None, year=None, movie_id=None):
+        if not (movie_name or movie_id):
+            print("Required movie_name or movie_id")
+            return None
+
+        if not movie_id and movie_name:
+            movie_id = self._get_movie_id(movie_name, year)
+
+        if not movie_id:
+            print("Could not find movie")
+            return None
+        url = f"{self.base_url}/movie/{movie_id}/release_dates"
+        params = {"api_key": self.api_key}
+
+        response = requests.get(url, params=params)
+        data = response.json()
+
+        for country in data.get("results", []):
+            if country["iso_3166_1"] == "US":
+                for r in country["release_dates"]:
+                    return r["release_date"][:4]
+
+        return None
 
 
 if __name__ == "__main__":
@@ -184,4 +217,4 @@ if __name__ == "__main__":
     print("Show test:")
     print(tmdb.get_episode_list(show_name="Spy X Family")[27])
     print("\nMovie test:")
-    print(tmdb.get_movie_details(movie_name="ALIEN"))
+    print(tmdb.get_movie_details(movie_name="12 Feet Deep"))
