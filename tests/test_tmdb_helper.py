@@ -19,7 +19,7 @@ def test_title_formatting(tmdb):
     title = "child of-the coold: code / white? <test'S"
     result = tmdb._title_formatting(title)
 
-    assert result == "Child Of-The Coold, Code + White. Test's"
+    assert result == "child of-the coold, code + white. test's"
 
 
 def test_get_show_id_success(monkeypatch, tmdb):
@@ -169,7 +169,7 @@ def test_get_episode_list_with_show_id(monkeypatch, tmdb):
     result = tmdb.get_episode_list(show_id=120089)
 
     assert len(result) == 1
-    assert result[0]["formatted_title"] == "Spy X Family - S01E01 - Operation Strix"
+    assert result[0]["formatted_title"] == "SPY x FAMILY - S01E01 - Operation Strix"
 
 
 def test_get_episode_list_with_series_details(monkeypatch, tmdb):

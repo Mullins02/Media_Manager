@@ -48,6 +48,7 @@ class BaseFilenameCleaner():
         if not self.format_file():
             print("Skipped file type")
         elif self.format_file():
+            self.remove_common_fluff()
             self.normalize_separators()
             self.collapse_spaces()
             self.final_cleanup()

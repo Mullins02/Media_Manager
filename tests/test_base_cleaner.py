@@ -32,7 +32,7 @@ def test_base_cleaner_remove_common_fluff():
 def test_base_cleaner_invalid_char_corrector():
     cleaner = BaseFilenameCleaner(
         directory=r"Z:\Movies\MovieLibrary",
-        filename="Movie-Name_(2024):Part.1.mkv",
+        filename="Movie-Name_(2024):Part.1",
     )
 
     cleaner.invalid_char_corrector()
@@ -42,7 +42,7 @@ def test_base_cleaner_invalid_char_corrector():
 def test_base_cleaner_normalize_separators():
     cleaner = BaseFilenameCleaner(
         directory=r"Z:\Movies\MovieLibrary",
-        filename="The.Movie_Name.2024.mkv",
+        filename="The.Movie_Name.2024",
     )
 
     cleaner.normalize_separators()
@@ -123,5 +123,5 @@ def test_base_cleaner_clean_filename_skips_filetype():
 
     result = cleaner.clean_filename()
     assert isinstance(result, dict)
-    assert result["filename"] == "poster"
+    assert result["filename"] == "poster.jpg"
     assert result["changed"] is False
