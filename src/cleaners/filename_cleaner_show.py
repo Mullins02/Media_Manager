@@ -3,16 +3,23 @@ import os
 import re
 from pathlib import Path
 
-from constants import EPISODE_PATTERN_TEMPLATE, EPISODE_EXTRACTION_PATTERNS
+from constants import EPISODE_PATTERN_TEMPLATE, EPISODE_EXTRACTION_PATTERNS, SEASON_PATTERN
 
 from cleaners.filename_cleaner_base import BaseFilenameCleaner
 
 class ShowFilenameCleaner(BaseFilenameCleaner):
     show_name =None
     
-    def __init__(self, directory: str, filename: str):
-        super().__init__(directory, filename)
-        self.show_name = Path(directory).name
+    def __init__(self, directory: str, filename: str, config=None):
+        super().__init__(directory, filename, config)
+        path = Path(directory)
+        folder_name = path.name
+        if config and getattr(config, "show_name", None):
+            self.show_name = config.show_name
+        elif re.match(SEASON_PATTERN, folder_name, re.IGNORECASE):
+            self.show_name = path.parent.name
+        else:
+            self.show_name = folder_name
         
     def build_episode_pattern(self, show_name):
         pattern = EPISODE_PATTERN_TEMPLATE.format(
@@ -28,15 +35,32 @@ class ShowFilenameCleaner(BaseFilenameCleaner):
         if len(words) <= 1:
             return show_name
         return "".join(word[0] for word in words if word)
+    
+    def convert_overall_to_season_episode(self, overall_episode):
+        episodes_per_season = getattr(self.config, "episodes_per_season", [])
 
-    def extract_episode_info(self, alt_names=None):
+        if episodes_per_season:
+            current_episode = overall_episode
+            season_num = 1
+
+            for season_total in episodes_per_season:
+                if current_episode <= season_total:
+                    return season_num, current_episode
+                current_episode -= season_total
+                season_num += 1
+
+        return None, None
+
+    def extract_episode_info(self):
         clean_name = self.filename_working
-        alt_names = alt_names or []
+        alt_names = getattr(self.config, "alt_names", [])
         show_names_to_check = [self.show_name] + alt_names
+        
         for show_name in show_names_to_check[:]:
             abbreviated_name = self.get_abbreviated_show_name(show_name)
             if abbreviated_name.lower() != show_name.lower():
                 show_names_to_check.append(abbreviated_name)
+                
         for alt_name in show_names_to_check:
             candidates = [
                 alt_name,
@@ -57,15 +81,19 @@ class ShowFilenameCleaner(BaseFilenameCleaner):
             if matched:
                 clean_name = re.sub(re.escape(matched), "", clean_name, flags=re.IGNORECASE)
                 break
+            
         season_num = 1
         episode_num = None
         season_found_in_filename = False
+        single_number_match = False
+    
         for pattern in EPISODE_EXTRACTION_PATTERNS:
             match = re.search(pattern, clean_name)
             if match:
                 groups = match.groups()
                 if len(groups) == 1:
                     episode_str = groups[0]
+                    single_number_match = True
                 else:
                     season_num = int(groups[0])
                     episode_str = groups[1]
@@ -83,6 +111,10 @@ class ShowFilenameCleaner(BaseFilenameCleaner):
             season_match = re.search(r'[Ss]eason\s*(\d+)', folder_name, re.IGNORECASE)
             if season_match:
                 season_num = int(season_match.group(1))
+            elif single_number_match and isinstance(episode_num, int):
+                converted = self.convert_overall_to_season_episode(episode_num)
+                if converted != (None, None):
+                    season_num, episode_num = converted
         if episode_num is not None:
             if isinstance(episode_num, float):
                 return f'{self.show_name} - S{season_num:02}E{episode_num:g}.{self.file_extension}'

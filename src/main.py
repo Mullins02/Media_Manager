@@ -7,7 +7,7 @@ from media_detector import MediaDetector
 
 def main():
     test_files = [
-        ("Media/Shows/The Office", "The.Office.S02E03.WEBRip.mkv"),
+        ("Media/Shows/The Office/Season 2", "The.Office.S02E03.WEBRip.mkv"),
         ("Media/Shows/The Office", "The Office - S02E03 - bubble.mkv"),
         ("Media/Movies", "The.Dark.Knight.2008.1080p.mkv"),
         ("Media/Downloads", "random_file.mkv"),
@@ -24,7 +24,7 @@ def main():
 
         cleaned = cleaner.clean_filename()
         print(f"Cleaned: {cleaned}\n")
-        
+    
         
 def test():
     directory_paths = ['Z:\\Movies', 'Z:\\Shows']
