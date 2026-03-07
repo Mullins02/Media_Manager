@@ -24,11 +24,7 @@ def test_title_formatting(tmdb):
 
 def test_get_show_id_success(monkeypatch, tmdb):
     def mock_get(url, params=None):
-        return MockResponse({
-            "results": [
-                {"id": 120089, "name": "SPY x FAMILY"}
-            ]
-        })
+        return MockResponse({"results": [{"id": 120089, "name": "SPY x FAMILY"}]})
 
     monkeypatch.setattr("src.tmdb_helper.requests.get", mock_get)
 
@@ -49,18 +45,18 @@ def test_get_show_id_not_found(monkeypatch, tmdb):
 def test_get_series_details_with_show_name(monkeypatch, tmdb):
     def mock_get(url, params=None):
         if "search/tv" in url:
-            return MockResponse({
-                "results": [{"id": 120089, "name": "SPY x FAMILY"}]
-            })
+            return MockResponse({"results": [{"id": 120089, "name": "SPY x FAMILY"}]})
         elif "/tv/120089" in url:
-            return MockResponse({
-                "id": 120089,
-                "seasons": [
-                    {"id": 1, "season_number": 0, "episode_count": 2},
-                    {"id": 2, "season_number": 1, "episode_count": 12},
-                    {"id": 3, "season_number": 2, "episode_count": 12},
-                ]
-            })
+            return MockResponse(
+                {
+                    "id": 120089,
+                    "seasons": [
+                        {"id": 1, "season_number": 0, "episode_count": 2},
+                        {"id": 2, "season_number": 1, "episode_count": 12},
+                        {"id": 3, "season_number": 2, "episode_count": 12},
+                    ],
+                }
+            )
         return MockResponse({})
 
     monkeypatch.setattr("src.tmdb_helper.requests.get", mock_get)
@@ -86,12 +82,12 @@ def test_get_series_details_with_show_name(monkeypatch, tmdb):
 def test_get_series_details_with_show_id(monkeypatch, tmdb):
     def mock_get(url, params=None):
         if "/tv/120089" in url:
-            return MockResponse({
-                "id": 120089,
-                "seasons": [
-                    {"id": 2, "season_number": 1, "episode_count": 12}
-                ]
-            })
+            return MockResponse(
+                {
+                    "id": 120089,
+                    "seasons": [{"id": 2, "season_number": 1, "episode_count": 12}],
+                }
+            )
         return MockResponse({})
 
     monkeypatch.setattr("src.tmdb_helper.requests.get", mock_get)
@@ -116,24 +112,24 @@ def test_get_series_details_missing_inputs(tmdb):
 def test_get_episode_list_with_show_name(monkeypatch, tmdb):
     def mock_get(url, params=None):
         if "search/tv" in url:
-            return MockResponse({
-                "results": [{"id": 120089, "name": "SPY x FAMILY"}]
-            })
+            return MockResponse({"results": [{"id": 120089, "name": "SPY x FAMILY"}]})
         elif url.endswith("/tv/120089"):
-            return MockResponse({
-                "id": 120089,
-                "name": "SPY x FAMILY",
-                "seasons": [
-                    {"id": 2, "season_number": 1, "episode_count": 2}
-                ]
-            })
+            return MockResponse(
+                {
+                    "id": 120089,
+                    "name": "SPY x FAMILY",
+                    "seasons": [{"id": 2, "season_number": 1, "episode_count": 2}],
+                }
+            )
         elif url.endswith("/tv/120089/season/1"):
-            return MockResponse({
-                "episodes": [
-                    {"episode_number": 1, "name": "Operation Strix", "id": 1001},
-                    {"episode_number": 2, "name": "Secure a Wife", "id": 1002},
-                ]
-            })
+            return MockResponse(
+                {
+                    "episodes": [
+                        {"episode_number": 1, "name": "Operation Strix", "id": 1001},
+                        {"episode_number": 2, "name": "Secure a Wife", "id": 1002},
+                    ]
+                }
+            )
         return MockResponse({})
 
     monkeypatch.setattr("src.tmdb_helper.requests.get", mock_get)
@@ -151,19 +147,21 @@ def test_get_episode_list_with_show_name(monkeypatch, tmdb):
 def test_get_episode_list_with_show_id(monkeypatch, tmdb):
     def mock_get(url, params=None):
         if url.endswith("/tv/120089"):
-            return MockResponse({
-                "id": 120089,
-                "name": "SPY x FAMILY",
-                "seasons": [
-                    {"id": 2, "season_number": 1, "episode_count": 1}
-                ]
-            })
+            return MockResponse(
+                {
+                    "id": 120089,
+                    "name": "SPY x FAMILY",
+                    "seasons": [{"id": 2, "season_number": 1, "episode_count": 1}],
+                }
+            )
         elif url.endswith("/tv/120089/season/1"):
-            return MockResponse({
-                "episodes": [
-                    {"episode_number": 1, "name": "Operation Strix", "id": 1001}
-                ]
-            })
+            return MockResponse(
+                {
+                    "episodes": [
+                        {"episode_number": 1, "name": "Operation Strix", "id": 1001}
+                    ]
+                }
+            )
         return MockResponse({})
 
     monkeypatch.setattr("src.tmdb_helper.requests.get", mock_get)
@@ -186,16 +184,15 @@ def test_get_episode_list_with_series_details(monkeypatch, tmdb):
 
     def mock_get(url, params=None):
         if url.endswith("/tv/120089"):
-            return MockResponse({
-                "id": 120089,
-                "name": "SPY x FAMILY"
-            })
+            return MockResponse({"id": 120089, "name": "SPY x FAMILY"})
         elif url.endswith("/tv/120089/season/1"):
-            return MockResponse({
-                "episodes": [
-                    {"episode_number": 1, "name": "Operation Strix", "id": 1001}
-                ]
-            })
+            return MockResponse(
+                {
+                    "episodes": [
+                        {"episode_number": 1, "name": "Operation Strix", "id": 1001}
+                    ]
+                }
+            )
         return MockResponse({})
 
     monkeypatch.setattr("src.tmdb_helper.requests.get", mock_get)
@@ -213,11 +210,7 @@ def test_get_episode_list_missing_inputs(tmdb):
 
 def test_get_movie_id_success(monkeypatch, tmdb):
     def mock_get(url, params=None):
-        return MockResponse({
-            "results": [
-                {"id": 348, "title": "Alien"}
-            ]
-        })
+        return MockResponse({"results": [{"id": 348, "title": "Alien"}]})
 
     monkeypatch.setattr("src.tmdb_helper.requests.get", mock_get)
 
@@ -238,15 +231,11 @@ def test_get_movie_id_not_found(monkeypatch, tmdb):
 def test_get_movie_details_with_name(monkeypatch, tmdb):
     def mock_get(url, params=None):
         if "search/movie" in url:
-            return MockResponse({
-                "results": [{"id": 348, "title": "Alien"}]
-            })
+            return MockResponse({"results": [{"id": 348, "title": "Alien"}]})
         elif url.endswith("/movie/348"):
-            return MockResponse({
-                "id": 348,
-                "title": "Alien",
-                "release_date": "1979-05-25"
-            })
+            return MockResponse(
+                {"id": 348, "title": "Alien", "release_date": "1979-05-25"}
+            )
         return MockResponse({})
 
     monkeypatch.setattr("src.tmdb_helper.requests.get", mock_get)
@@ -257,18 +246,16 @@ def test_get_movie_details_with_name(monkeypatch, tmdb):
         "movie_id": 348,
         "title": "Alien",
         "year": "1979",
-        "formatted_title": "Alien (1979)"
+        "formatted_title": "Alien (1979)",
     }
 
 
 def test_get_movie_details_with_id(monkeypatch, tmdb):
     def mock_get(url, params=None):
         if url.endswith("/movie/348"):
-            return MockResponse({
-                "id": 348,
-                "title": "Alien",
-                "release_date": "1979-05-25"
-            })
+            return MockResponse(
+                {"id": 348, "title": "Alien", "release_date": "1979-05-25"}
+            )
         return MockResponse({})
 
     monkeypatch.setattr("src.tmdb_helper.requests.get", mock_get)

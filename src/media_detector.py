@@ -1,5 +1,6 @@
-from constants import MEDIA_KEYWORDS 
+from constants import MEDIA_KEYWORDS
 from cleaners import CLEANERS
+
 
 class MediaDetector:
     @staticmethod
@@ -8,9 +9,10 @@ class MediaDetector:
         for media_type, keywords in MEDIA_KEYWORDS.items():
             for keyword in keywords:
                 if keyword in directory:
-                    return media_type 
+                    return media_type
         return "UNKNOWN"
-    
+
+    @staticmethod
     def get_cleaner(directory: str, filename: str):
         media_type = MediaDetector._detect_type(directory, filename)
         cleaner_class = CLEANERS[media_type]

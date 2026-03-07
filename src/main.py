@@ -23,25 +23,27 @@ def main():
             continue
 
         cleaned = cleaner.clean_filename()
-        print(f"Cleaned: {cleaned}\n")
-    
         
+        #TODO - compare the cleaned filname to tmdb 
+        print(f"Cleaned: {cleaned}\n")
+
+
 def test():
-    directory_paths = ['Z:\\Movies', 'Z:\\Shows']
+    directory_paths = ["Z:\\Movies", "Z:\\Shows"]
     for directory_path in directory_paths:
         for root, dirs, files in os.walk(directory_path):
             if root.startswith(tuple(MEDIA_FOLDERS)):
-                for file in files:                    
+                for file in files:
                     cleaner = MediaDetector.get_cleaner(root, file)
                     print(f"Original: {file}")
                     if cleaner is None:
                         print("Type: UNKNOWN")
                         continue
                     cleaned = cleaner.clean_filename()
-                    print(f'Cleaned: {cleaned}\n')
-    print('end of test')
+                    print(f"Cleaned: {cleaned}\n")
+    print("end of test")
 
 
 if __name__ == "__main__":
     main()
-    # test()
+    test()
