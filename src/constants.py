@@ -1,5 +1,7 @@
 import re
 
+MEDIA_DIRECTORIES = ["Z:\\Movies\\MovieLibrary", "Z:\\Shows\\Animation", "Z:\\Shows\\Television"]
+
 EPISODE_PATTERN_TEMPLATE = (
     r"^{show_name} - (?:Ep \d+ )?"
     r"(?:\(S\d{{2}}E\d{{3}}\) - |S\d{{2}}E\d+(?:\.\d+)? - )"
@@ -34,6 +36,7 @@ MOVIE_DETAIL_PATTERN_TEMPLATE = r"(.+?)[\s\(\[]*(\d{4})[\)\]\s]*"
 
 
 MEDIA_KEYWORDS = {
+    # "SPECIAL": ["special", "specials"],
     "MOVIE": ["movie", "movies", "film"],
     "SHOW": ["show", "shows", "tv", "series"],
 }

@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 import os
 import re
 from pathlib import Path
+import logging
 
 from constants import (
     EPISODE_PATTERN_TEMPLATE,
@@ -11,6 +12,7 @@ from constants import (
 
 from cleaners.filename_cleaner_base import BaseFilenameCleaner
 
+logger = logging.getLogger(__name__)
 #TODO - add Part 1, 2, etc instead of (1), (2), etc
 class ShowFilenameCleaner(BaseFilenameCleaner):
     show_name = None
@@ -131,12 +133,10 @@ class ShowFilenameCleaner(BaseFilenameCleaner):
         return None
 
     def clean_filename(self) -> str:
-        if not self.format_file():
-            print("Skipped file type")
-            return self.results()
+        if not self.cleanable():
+            logger.debug("Skipped file type")
         elif self.build_episode_pattern(self.show_name).match(self.filename_og):
-            # print("Already formatted")
-            return self.results()
+            logger.debug("Already formatted")
         else:
             self.remove_common_fluff()
             self.remove_ver_ind()

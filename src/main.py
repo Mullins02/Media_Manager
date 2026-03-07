@@ -1,34 +1,49 @@
 import os, re
+from pprint import pprint
+import logging
+import tkinter as tk
 
 from constants import MEDIA_FOLDERS, VIDEO_EXTENSIONS
 
-from media_detector import MediaDetector
-from tmdb_helper import TMDB_Utils
+from utils.media_detector import MediaDetector
+from utils.tmdb_helper import TMDB_Utils
 from constants import FILE_EXTENSIONS_TO_SKIP, VIDEO_EXTENSIONS
+from utils.lib_scanner import LibraryScanner
+from ui import UIBackend, MediaManagerUI
 
+from utils.logger import setup_logger
 
+setup_logger(debug=False)
+
+logger = logging.getLogger(__name__)
+
+logger.info("Starting Media Manager")
 
 def main():
-    test_files = [
-        ("Media/Shows/The Office/Season 2", "The.Office.S02E03.WEBRip.mkv"),
-        ("Media/Shows/Mr Inbetween", "Mr Inbetween - S01E01 - The Pee Pee Guy.mkv"),
-        ("Media/Movies", "The.Dark.Knight.2008.1080p.mkv"),
-        ("Media/Downloads", "random_file.mkv"),
-    ]
+    # test_files = [
+    #     ("Media/Shows/The Office/Season 2", "The.Office.S02E03.WEBRip.mkv"),
+    #     ("Media/Shows/Mr Inbetween", "Mr Inbetween - S01E01 - The Pee Pee Guy.mkv"),
+    #     ("Media/Movies", "The.Dark.Knight.2008.1080p.mkv"),
+    #     ("Media/Downloads", "random_file.mkv"),
+    # ]W
 
-    for directory, filename in test_files:
-        cleaner = MediaDetector.get_cleaner(directory, filename)
+    # for directory, filename in test_files:
+    #     cleaner = MediaDetector.get_cleaner(directory, filename)
 
-        print(f"Original: {filename}")
+    #     print(f"Original: {filename}")
 
-        if cleaner is None:
-            print("Type: UNKNOWN")
-            continue
+    #     if cleaner is None:
+    #         print("Type: UNKNOWN")
+    #         continue
 
-        cleaned = cleaner.clean_filename()
+    #     cleaned = cleaner.clean_filename()
 
-        # TODO - compare the cleaned filname to tmdb
-        print(f"Cleaned: {cleaned}\n")
+    #     # TODO - compare the cleaned filname to tmdb
+    #     print(f"Cleaned: {cleaned}\n")
+
+    root = tk.Tk()
+    app = MediaManagerUI(root)
+    app.run()
 
 
 def test():
@@ -187,7 +202,7 @@ def test3():
 
 
 if __name__ == "__main__":
-    # main()
+    main()
     # test()
-    test2()
-    test3()
+    # test2()
+    # test3()

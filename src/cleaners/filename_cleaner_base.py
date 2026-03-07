@@ -1,8 +1,11 @@
 import os, re
-from tmdb_helper import TMDB_Utils
+from utils.tmdb_helper import TMDB_Utils
+import logging
 
 from constants import FILE_EXTENSIONS_TO_SKIP, VIDEO_EXTENSIONS
 
+
+logger = logging.getLogger(__name__)
 
 class BaseFilenameCleaner():
     def __init__(self, directory, filename, config=None):
@@ -14,7 +17,7 @@ class BaseFilenameCleaner():
         self.config = config
         self.tmdb = TMDB_Utils()
 
-    def format_file(self):
+    def cleanable(self):
         return not self.file_extension in FILE_EXTENSIONS_TO_SKIP and self.file_extension in VIDEO_EXTENSIONS
 
     def remove_common_fluff(self):
@@ -42,12 +45,12 @@ class BaseFilenameCleaner():
         return self.filename_og != self.filename_working
 
     def results(self) -> dict:
-        return {"filename": self.filename_working, "changed": self.compare_og_to_work()}
+        return {"filename": self.filename_working, "changed": self.compare_og_to_work(), "cleanable": self.cleanable()}
 
     def clean_filename(self) -> str:
-        if not self.format_file():
-            print("Skipped file type")
-        elif self.format_file():
+        if not self.cleanable():
+            logger.debug("File not formattable")
+        elif self.cleanable():
             self.remove_common_fluff()
             self.normalize_separators()
             self.collapse_spaces()

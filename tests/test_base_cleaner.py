@@ -1,22 +1,22 @@
 from cleaners import BaseFilenameCleaner
 
 
-def test_base_cleaner_format_file_allows_valid_extension():
+def test_base_cleaner_cleanable_allows_valid_extension():
     cleaner = BaseFilenameCleaner(
         directory=r"Z:\Movies\MovieLibrary",
         filename="The.Movie.2024.mkv",
     )
 
-    assert cleaner.format_file() is True
+    assert cleaner.cleanable() is True
 
 
-def test_base_cleaner_format_file_skips_invalid_extension():
+def test_base_cleaner_cleanable_skips_invalid_extension():
     cleaner = BaseFilenameCleaner(
         directory=r"Z:\Movies\MovieLibrary",
         filename="poster.jpg",
     )
 
-    assert cleaner.format_file() is False
+    assert cleaner.cleanable() is False
 
 
 def test_base_cleaner_remove_common_fluff():
