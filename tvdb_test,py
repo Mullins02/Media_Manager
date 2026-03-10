@@ -1,0 +1,128 @@
+import os
+import sys
+from dotenv import load_dotenv
+import tvdb_v4_official
+
+tvdb = tvdb_v4_official.TVDB("743b73e8-e6d9-4c88-a755-26890c1ec8fa")
+
+
+def get_english_title(data):
+    if not data:
+        return None
+
+    translations = data.get("translations")
+
+    # translations as dict
+    if isinstance(translations, dict):
+        for key in ("eng", "en", "english"):
+            block = translations.get(key)
+
+            if isinstance(block, dict):
+                name = block.get("name")
+                if name:
+                    return name
+
+            elif isinstance(block, list):
+                for item in block:
+                    if isinstance(item, dict):
+                        name = item.get("name")
+                        if name:
+                            return name
+
+    # translations as list
+    elif isinstance(translations, list):
+        for item in translations:
+            if not isinstance(item, dict):
+                continue
+
+            lang = (
+                item.get("language")
+                or item.get("languageCode")
+                or item.get("iso639_1")
+                or item.get("alias")
+            )
+
+            if str(lang).lower() in ("eng", "en", "english"):
+                name = item.get("name")
+                if name:
+                    return name
+
+    # aliases fallback
+    aliases = data.get("aliases")
+    if isinstance(aliases, list):
+        for alias in aliases:
+            if not isinstance(alias, dict):
+                continue
+
+            lang = alias.get("language") or alias.get("languageCode")
+            name = alias.get("name")
+
+            if str(lang).lower() in ("eng", "en", "english") and name:
+                return name
+
+    # final fallback
+    return data.get("name")
+
+
+def find_show(title):
+    results = tvdb.search(title, type="series")
+
+    if not results:
+        print("No show found")
+        return None
+
+    show = results[0]
+    show_name = get_english_title(show) or show.get("name")
+
+    print(f"Found show: {show_name} ({show.get('year')})")
+    return show.get("tvdb_id") or show.get("id")
+
+
+def print_all_episodes(show_id):
+    page = 0
+
+    # data = tvdb.get_series_episodes(show_id, page=page)
+    series_episodes = tvdb.get_series_episodes(
+        show_id,
+        season=1
+    )
+    episodes = series_episodes["episodes"]
+    print(episodes[0])
+    
+    print(tvdb.get_episode_translation(episodes[0]['id'], 'eng'))
+    
+    
+    # print(tvdb.get_season_translation(series_details['seasons'][1]['id'], "eng"))
+    # episodes = series_details.get("episodes", [])
+
+    # if not episodes:
+    #     break
+
+    # for ep in episodes:
+    #     season = ep.get("seasonNumber")
+    #     number = ep.get("number") or ep.get("episodeNumber")
+    #     title = get_english_title(ep) or ep.get("name")
+
+    #     if season is None or number is None:
+    #         print(f"Missing season/episode: {title}")
+    #         continue
+
+    #     print(f"S{int(season):02}E{int(number):02}  {title}")
+
+    # page += 1
+        
+
+
+def main():
+    title = "Jujutsu Kaisen"
+
+    show_id = find_show(title)
+    if not show_id:
+        return
+
+    print("\nEpisodes:\n")
+    print_all_episodes(show_id)
+
+
+if __name__ == "__main__":
+    main()

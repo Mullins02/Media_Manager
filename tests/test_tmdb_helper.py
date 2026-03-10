@@ -228,7 +228,7 @@ def test_get_movie_id_not_found(monkeypatch, tmdb):
     assert result is None
 
 
-def test_get_movie_details_with_name(monkeypatch, tmdb):
+def test_get_details_movie_with_name(monkeypatch, tmdb):
     def mock_get(url, params=None):
         if "search/movie" in url:
             return MockResponse({"results": [{"id": 348, "title": "Alien"}]})
@@ -240,7 +240,7 @@ def test_get_movie_details_with_name(monkeypatch, tmdb):
 
     monkeypatch.setattr("utils.tmdb_helper.requests.get", mock_get)
 
-    result = tmdb.get_movie_details(movie_name="Alien")
+    result = tmdb.get_details_movie(movie_name="Alien")
 
     assert result == {
         "movie_id": 348,
@@ -250,7 +250,7 @@ def test_get_movie_details_with_name(monkeypatch, tmdb):
     }
 
 
-def test_get_movie_details_with_id(monkeypatch, tmdb):
+def test_get_details_movie_with_id(monkeypatch, tmdb):
     def mock_get(url, params=None):
         if url.endswith("/movie/348"):
             return MockResponse(
@@ -260,7 +260,7 @@ def test_get_movie_details_with_id(monkeypatch, tmdb):
 
     monkeypatch.setattr("utils.tmdb_helper.requests.get", mock_get)
 
-    result = tmdb.get_movie_details(movie_id=348)
+    result = tmdb.get_details_movie(movie_id=348)
 
     assert result["movie_id"] == 348
     assert result["title"] == "Alien"
@@ -268,12 +268,12 @@ def test_get_movie_details_with_id(monkeypatch, tmdb):
     assert result["formatted_title"] == "Alien (1979)"
 
 
-def test_get_movie_details_missing_inputs(tmdb):
-    result = tmdb.get_movie_details()
+def test_get_details_movie_missing_inputs(tmdb):
+    result = tmdb.get_details_movie()
     assert result is None
 
 
-def test_get_movie_details_not_found(monkeypatch, tmdb):
+def test_get_details_movie_not_found(monkeypatch, tmdb):
     def mock_get(url, params=None):
         if "search/movie" in url:
             return MockResponse({"results": []})
@@ -281,5 +281,5 @@ def test_get_movie_details_not_found(monkeypatch, tmdb):
 
     monkeypatch.setattr("utils.tmdb_helper.requests.get", mock_get)
 
-    result = tmdb.get_movie_details(movie_name="Not A Real Movie")
+    result = tmdb.get_details_movie(movie_name="Not A Real Movie")
     assert result is None
