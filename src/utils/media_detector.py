@@ -13,9 +13,9 @@ class MediaDetector:
         return "UNKNOWN"
 
     @staticmethod
-    def get_cleaner(directory: str, filename: str):
+    def get_media_type_and_file_utils(directory: str, filename: str) -> tuple:
         media_type = MediaDetector.detect_type(directory, filename)
         cleaner_class = CLEANERS[media_type]
         if cleaner_class is None:
-            return None
-        return cleaner_class(directory, filename)
+            return None, None
+        return media_type, cleaner_class(directory, filename)

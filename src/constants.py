@@ -1,12 +1,18 @@
 import re
 
-MEDIA_DIRECTORIES = ["Z:\\Movies\\MovieLibrary", "Z:\\Shows\\Animation", "Z:\\Shows\\Television"]
+MEDIA_DIRECTORIES = [
+    "Z:\\Movies\\MovieLibrary",
+    "Z:\\Shows\\Animation",
+    "Z:\\Shows\\Television",
+]
 
-EPISODE_PATTERN_TEMPLATE = (
+FORMATTED_PATTERN_TEMPLATE = (
     r"^{show_name} - (?:Ep \d+ )?"
     r"(?:\(S\d{{2}}E\d{{3}}\) - |S\d{{2}}E\d+(?:\.\d+)? - )"
     r".+\."
 )
+
+FORMATTED_EPISODE_DETAIL_PATTERN = r"[Ss](\d+)[Ee](\d+)"
 
 EPISODE_EXTRACTION_PATTERNS = [
     r"[Ss](\d+)[Ee](\d+(?:\.\d+)?)(?:[.\s_-]|$)",
@@ -30,7 +36,7 @@ EPISODE_EXTRACTION_PATTERNS = [
 SEASON_PATTERN = r"[Ss]eason [0-9]*"
 
 
-MOVIE_PATTERN_TEMPLATE = r"^[A-Za-z0-9\s&',!\[\]-]+?" r"\(\d{{4}}\)"
+FORMATTED_MOVIE_PATTERN = r"^[A-Za-z0-9\s&',!\[\]-]+?" r"\(\d{4}\)"
 
 MOVIE_DETAIL_PATTERN_TEMPLATE = r"(.+?)[\s\(\[]*(\d{4})[\)\]\s]*"
 
@@ -43,10 +49,12 @@ MEDIA_KEYWORDS = {
 
 VIDEO_EXTENSIONS = [".mkv", ".mp4", ".avi", ".mov", ".wmv", ".flv", ".webm", ".m4v"]
 
+SUB_EXTENSIONS = [".srt"]
+
 MEDIA_FOLDERS = [
     r"Z:\Movies\MovieLibrary",
     r"Z:\Shows\Animation",
     r"Z:\Shows\Television",
 ]
 
-FILE_EXTENSIONS_TO_SKIP = [".ico", ".ini", ".torrent", ".png"]
+FILE_EXTENSIONS_TO_SKIP = [".ico", ".ini", ".torrent", ".png", ".txt"]
