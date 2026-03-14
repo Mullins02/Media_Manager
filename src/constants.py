@@ -1,9 +1,9 @@
 import re
 
 MEDIA_DIRECTORIES = [
-    "Z:\\Movies\\MovieLibrary",
+    # "Z:\\Movies\\MovieLibrary",
     "Z:\\Shows\\Animation",
-    "Z:\\Shows\\Television",
+    # "Z:\\Shows\\Television",
 ]
 
 FORMATTED_PATTERN_TEMPLATE = (
@@ -33,7 +33,9 @@ EPISODE_EXTRACTION_PATTERNS = [
     r"[Ss](\d+) - (\d+)",
 ]
 
-SEASON_PATTERN = r"[Ss]eason [0-9]*"
+SEASON_PATTERN = r"[Ss]eason\s*(\d+)"
+
+VERSION_PATTERN = r"\s*[Vv]\d.?\d*\s*$"
 
 
 FORMATTED_MOVIE_PATTERN = r"^[A-Za-z0-9\s&',!\[\]-]+?" r"\(\d{4}\)"

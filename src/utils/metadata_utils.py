@@ -194,6 +194,9 @@ class MetadataUtils:
         }
         response = requests.get(url, params=params)
         data = response.json()
+        
+        
+        
 
         if not data:
             return None
@@ -383,3 +386,134 @@ class MetadataUtils:
 
         self.episode_cache[key] = episode_details
         return episode_details
+
+
+
+######## IDEA FOR PER library_item API CALL
+
+    def _get_uncached_details_episode_v2(
+        self, show_id: int, season: int, episode: float
+    ) -> dict | None:
+        if show_id is None or season is None or episode is None:
+            logger.info("Required show_id, season, and episode")
+            return None
+
+        url = f"{self.base_url}/tv/{show_id}/season/{season}"
+        # url = f"{self.base_url}/tv/{show_id}/season/{season}/episode/{episode}"
+        params = {
+            "api_key": self.tmdb_api_key,
+            "language": "en-US",
+        }
+        response = requests.get(url, params=params)
+        data = response.json()
+        
+        print(data)
+
+        if not data:
+            return None
+
+        raw_title = data.get("name")
+        if not raw_title:
+            return None
+
+        return {
+            "show_id": int(show_id),
+            "season": int(season),
+            "episode": float(episode),
+            "title": self._title_formatting(raw_title),
+        }
+
+    def get_details_show_v2(
+        self, show_name: str = None, year: str = None, show_id: str = None
+    ) -> dict | None:
+        if not (show_name or show_id):
+            logger.info("Required show_name or show_id")
+            return None
+
+        if not show_id and show_name:
+            show_id = self._get_id_show(show_name, year)
+
+        if not show_id:
+            logger.info("Could not find show")
+            return None
+
+        url = f"{self.base_url}/tv/{show_id}"
+        params = {
+            "api_key": self.tmdb_api_key,
+            "language": "en-US",
+        }
+        response = requests.get(url, params=params)
+        data = response.json()
+
+        if not data:
+            return None
+        
+        season_data = {}        
+        for season in range(0, len(data["seasons"])):
+            # skip specials for now
+            if 'specials' != season["name"].lower():
+                season_data[season] = {}
+                
+                #call api with season id
+                #get episode detials from season queries
+                #add to season_
+                
+        episode_data = {}
+        for season in season_data:
+            for episode in range(0, season["episode_count"]):
+                self._get_uncached_details_episode_v2()
+                
+            
+
+        raw_title = data.get("name")
+        if not raw_title:
+            return None
+
+        title = self._title_formatting(raw_title)
+
+        first_air_date = data.get("first_air_date")
+        resolved_year = first_air_date[:4] if first_air_date else None
+
+        return {
+            "show_id": show_id,
+            "title": title,
+            "year": resolved_year,
+            "formatted_title": f"{title} ({resolved_year})" if resolved_year else title,
+        }
+
+    def get_media_details(self, media_type: str, library_item:str)  -> dict | None:
+        match media_type:
+            case "SHOW":
+                logger.debug("searching for show details")
+                show_details = self.get_details_show(library_item)
+
+                if not show_details:
+                    return None
+
+                show_id = show_details["show_id"]
+
+                episodes_lookup = {}
+
+                seasons = self._get_uncached_details_show_seasons(show_id)
+
+                for season in seasons:
+                    season_num = season["season_number"]
+
+                    episodes = self._get_uncached_details_season(show_id, season_num)
+
+                    for ep in episodes:
+                        key = (season_num, ep["episode_number"])
+                        episodes_lookup[key] = ep["name"]
+
+                return {
+                    "title": show_details["title"],
+                    "year": show_details.get("year"),
+                    "show_id": show_id,
+                    "episodes_lookup": episodes_lookup
+                }
+
+        
+            # case "MOVIE":
+            #     logger.debug("searching for movie details")
+            #     pass
+        

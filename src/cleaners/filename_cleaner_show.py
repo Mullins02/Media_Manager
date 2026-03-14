@@ -8,7 +8,7 @@ from constants import (
     FORMATTED_PATTERN_TEMPLATE,
     EPISODE_EXTRACTION_PATTERNS,
     SEASON_PATTERN,
-    SUB_EXTENSIONS,
+    VERSION_PATTERN,
 )
 
 from cleaners.filename_cleaner_base import BaseFilenameCleaner
@@ -34,7 +34,7 @@ class ShowFilenameCleaner(BaseFilenameCleaner):
         )
 
     def remove_ver_ind(self):
-        self.filename_working = re.sub(r"\s*[Vv]\d+\s*$", "", self.filename_working)
+        self.filename_working = re.sub(VERSION_PATTERN, "", self.filename_working)
 
     def get_abbreviated_show_name(self, show_name: str) -> str:
         words = show_name.split()
@@ -97,8 +97,6 @@ class ShowFilenameCleaner(BaseFilenameCleaner):
 
         season_num = 1
         episode_num = None
-        season_found_in_filename = False
-        single_number_match = False
 
         for pattern in EPISODE_EXTRACTION_PATTERNS:
             match = re.search(pattern, clean_name)
@@ -121,7 +119,7 @@ class ShowFilenameCleaner(BaseFilenameCleaner):
                     continue
         if not season_found_in_filename:
             folder_name = folder_name = PureWindowsPath(self.directory).name
-            season_match = re.search(r"[Ss]eason\s*(\d+)", folder_name, re.IGNORECASE)
+            season_match = re.search(SEASON_PATTERN, folder_name, re.IGNORECASE)
             if season_match:
                 season_num = int(season_match.group(1))
             elif single_number_match and isinstance(episode_num, int):
@@ -130,7 +128,7 @@ class ShowFilenameCleaner(BaseFilenameCleaner):
                     season_num, episode_num = converted
         if episode_num is not None:
             if isinstance(episode_num, float):
-                return f"{self.show_name} - S{season_num:02}E{episode_num:g}{self.file_extension}"
+                return f"{self.show_name} - S{season_num:02}E{episode_str}{self.file_extension}"
             return f"{self.show_name} - S{season_num:02}E{episode_num:02}{self.file_extension}"
         return None
 
