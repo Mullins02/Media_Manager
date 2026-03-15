@@ -5,18 +5,19 @@ from pathlib import PureWindowsPath
 import logging
 
 from constants import (
-    EPISODE_PATTERN_TEMPLATE,
+    FORMATTED_PATTERN_TEMPLATE,
     EPISODE_EXTRACTION_PATTERNS,
     SEASON_PATTERN,
+    VERSION_PATTERN,
 )
 
 from cleaners.filename_cleaner_base import BaseFilenameCleaner
 
 logger = logging.getLogger(__name__)
-#TODO - add Part 1, 2, etc instead of (1), (2), etc
-class ShowFilenameCleaner(BaseFilenameCleaner):
-    show_name = None
 
+
+# TODO - add Part 1, 2, etc instead of (1), (2), etc
+class ShowFilenameCleaner(BaseFilenameCleaner):
     def __init__(self, directory: str, filename: str, config=None):
         super().__init__(directory, filename, config)
         path = PureWindowsPath(directory)
@@ -27,13 +28,13 @@ class ShowFilenameCleaner(BaseFilenameCleaner):
             self.show_name = path.parent.name
         else:
             self.show_name = folder_name
-
-    def build_episode_pattern(self, show_name):
-        pattern = EPISODE_PATTERN_TEMPLATE.format(show_name=re.escape(show_name))
-        return re.compile(pattern, re.IGNORECASE)
+        self.pattern = re.compile(
+            FORMATTED_PATTERN_TEMPLATE.format(show_name=re.escape(self.show_name)),
+            re.IGNORECASE,
+        )
 
     def remove_ver_ind(self):
-        self.filename_working = re.sub(r"\s*[Vv]\d+\s*$", "", self.filename_working)
+        self.filename_working = re.sub(VERSION_PATTERN, "", self.filename_working)
 
     def get_abbreviated_show_name(self, show_name: str) -> str:
         words = show_name.split()
@@ -74,8 +75,7 @@ class ShowFilenameCleaner(BaseFilenameCleaner):
             ]
             seen = set()
             candidates = [
-                c for c in candidates
-                if not (c.lower() in seen or seen.add(c.lower()))
+                c for c in candidates if not (c.lower() in seen or seen.add(c.lower()))
             ]
 
             clean_lower = clean_name.lower()
@@ -85,7 +85,9 @@ class ShowFilenameCleaner(BaseFilenameCleaner):
                     matched = cand
                     break
             if matched:
-                clean_name = re.sub(re.escape(matched), "", clean_name, flags=re.IGNORECASE)
+                clean_name = re.sub(
+                    re.escape(matched), "", clean_name, flags=re.IGNORECASE
+                )
                 break
 
         return clean_name
@@ -95,8 +97,6 @@ class ShowFilenameCleaner(BaseFilenameCleaner):
 
         season_num = 1
         episode_num = None
-        season_found_in_filename = False
-        single_number_match = False
 
         for pattern in EPISODE_EXTRACTION_PATTERNS:
             match = re.search(pattern, clean_name)
@@ -119,7 +119,7 @@ class ShowFilenameCleaner(BaseFilenameCleaner):
                     continue
         if not season_found_in_filename:
             folder_name = folder_name = PureWindowsPath(self.directory).name
-            season_match = re.search(r"[Ss]eason\s*(\d+)", folder_name, re.IGNORECASE)
+            season_match = re.search(SEASON_PATTERN, folder_name, re.IGNORECASE)
             if season_match:
                 season_num = int(season_match.group(1))
             elif single_number_match and isinstance(episode_num, int):
@@ -128,14 +128,14 @@ class ShowFilenameCleaner(BaseFilenameCleaner):
                     season_num, episode_num = converted
         if episode_num is not None:
             if isinstance(episode_num, float):
-                return f"{self.show_name} - S{season_num:02}E{episode_num:g}{self.file_extension}"
+                return f"{self.show_name} - S{season_num:02}E{episode_str}{self.file_extension}"
             return f"{self.show_name} - S{season_num:02}E{episode_num:02}{self.file_extension}"
         return None
 
     def clean_filename(self) -> dict:
         if not self.cleanable():
             logger.debug("Skipped file type")
-        elif self.build_episode_pattern(self.show_name).match(self.filename_og):
+        elif self.formatted():
             logger.debug("Already formatted")
         else:
             self.remove_common_fluff()

@@ -1,21 +1,18 @@
 import re
 import logging
 
-from constants import MOVIE_PATTERN_TEMPLATE, MOVIE_DETAIL_PATTERN_TEMPLATE
+from constants import FORMATTED_MOVIE_PATTERN, MOVIE_DETAIL_PATTERN_TEMPLATE
 
 from cleaners.filename_cleaner_base import BaseFilenameCleaner
 
 
 logger = logging.getLogger(__name__)
+
+
 class MovieFilenameCleaner(BaseFilenameCleaner):
     def __init__(self, directory: str, filename: str):
         super().__init__(directory, filename)
-
-    def build_movie_pattern(
-        self,
-    ):
-        pattern = MOVIE_PATTERN_TEMPLATE
-        return re.compile(pattern, re.IGNORECASE)
+        self.pattern = re.compile(FORMATTED_MOVIE_PATTERN)
 
     def extract_movie_details(self):
         match = re.match(MOVIE_DETAIL_PATTERN_TEMPLATE, self.filename_working)
@@ -29,7 +26,7 @@ class MovieFilenameCleaner(BaseFilenameCleaner):
     def clean_filename(self) -> dict:
         if not self.cleanable():
             logger.debug("Skipped file type")
-        elif self.build_movie_pattern().match(self.filename_og):
+        elif self.formatted():
             logger.debug("Already formatted")
         else:
             self.remove_common_fluff()
